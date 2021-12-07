@@ -1,0 +1,72 @@
+shared:
+  environment:
+    DOCKER_REPO: screwdrivercd/artifacts-unzip-worker
+
+jobs:
+  main:
+    image: node:16
+    environment:
+      SD_SONAR_OPTS: "-Dsonar.sources=lib,plugins,helpers -Dsonar.tests=test -Dsonar.javascript.lcov.reportPaths=artifacts/coverage/lcov.info -Dsonar.testExecutionReportPaths=artifacts/report/test.xml"
+    requires: [~pr, ~commit]
+    steps:
+      - install: npm install
+      - test: npm test
+      - coverage: ./ci/coverage.sh
+      - cp-coverage-to-artifacts: cp -r artifacts/coverage $SD_ARTIFACTS_DIR
+
+  # Publish the package to GitHub and build Docker image
+  publish:
+    requires: [main]
+    steps:
+      - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
+      - install-ci: npm install npm-auto-version
+      - publish-npm-and-git-tag: ./ci/publish.sh
+    secrets:
+      # Publishing to NPM
+      - NPM_TOKEN
+      # Pushing tags to Git
+      - GIT_KEY
+
+  docker-publish:
+    requires: publish
+    template: sd/dind@latest
+
+  # Deploy to beta environment and run tests
+  beta:
+    image: node:16
+    requires: [docker-publish]
+    steps:
+      - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
+      - wait-docker: DOCKER_TAG=`meta get docker_tag` ./ci/docker-wait.sh
+      - deploy-k8s: K8S_TAG=`meta get docker_tag` ./ci/k8s-deploy.sh
+      - test: npm install && npm test
+    environment:
+      K8S_CONTAINER: screwdriver-artifacts-unzip-worker
+      K8S_IMAGE: screwdrivercd/artifacts-unzip-worker
+      K8S_HOST: kubernetes.default.svc
+      K8S_DEPLOYMENT: sdartifacts-unzip-worker-beta
+      K8S_ENV_KEY: DATASTORE_DYNAMODB_PREFIX
+      K8S_ENV_VALUE: beta_rc2_
+    secrets:
+      # Talking to Kubernetes
+      - K8S_TOKEN
+
+  # Deploy to prod environment and run tests
+  prod:
+    image: node:16
+    requires: [beta]
+    steps:
+      - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
+      - wait-docker: DOCKER_TAG=`meta get docker_tag` ./ci/docker-wait.sh
+      - deploy-k8s: K8S_TAG=`meta get docker_tag` ./ci/k8s-deploy.sh
+      - test: npm install && npm test
+    environment:
+      K8S_CONTAINER: screwdriver-artifacts-unzip-worker
+      K8S_IMAGE: screwdrivercd/artifacts-unzip-worker
+      K8S_HOST: kubernetes.default.svc
+      K8S_DEPLOYMENT: sdartifacts-unzip-worker
+      K8S_ENV_KEY: DATASTORE_DYNAMODB_PREFIX
+      K8S_ENV_VALUE: rc2_
+    secrets:
+      # Talking to Kubernetes
+      - K8S_TOKEN
