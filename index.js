@@ -56,7 +56,7 @@ multiWorker.on('pause', workerId => {
 
 // multiWorker emitters
 multiWorker.on('internalError', error => {
-    logger.info(error);
+    logger.error(error);
 });
 multiWorker.on('multiWorkerAction', (verb, delay) => {
     logger.info(`*** checked for worker status: ${verb} (event loop delay: ${delay}ms)`);
