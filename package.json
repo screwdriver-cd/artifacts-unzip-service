@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "nyc --report-dir ./artifacts/coverage --reporter=lcov mocha --reporter mocha-multi-reporters --reporter-options configFile=./mocha.config.json --recursive --timeout 4000 --retries 1 --exit --allow-uncaught true --color true"
+    "pretest": "eslint . --quiet",
+    "test": "nyc --report-dir ./artifacts/coverage --reporter=lcov mocha --reporter mocha-multi-reporters --reporter-options configFile=./mocha.config.json --recursive --timeout 4000 --retries 1 --exit --allow-uncaught true --color true",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
@@ -14,9 +16,10 @@
   "author": "",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/screwdriver-cd/artifacts-unzip-worker/issues"
+    "url": "https://github.com/screwdriver-cd/screwdriver/issues"
   },
   "homepage": "https://github.com/screwdriver-cd/artifacts-unzip-worker#readme",
+  "contributors": [],
   "dependencies": {
     "adm-zip": "^0.5.9",
     "config": "^3.3.6",

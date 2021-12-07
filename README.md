@@ -6,7 +6,7 @@
 ## Usage
 
 ```bash
-npm install scrwedriver-artifacts-unzip-worker
+npm install screwdriver-artifacts-unzip-worker
 ```
 
 ## Testing
