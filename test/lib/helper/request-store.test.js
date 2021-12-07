@@ -102,7 +102,7 @@ describe('Request to Store Unit Test', () => {
         });
     });
 
-    describe('getZipArtifact function', () => {
+    describe('putArtifact function', () => {
         it('can upload artifact to Store', async () => {
             const fileName = 'test-artifact1.txt';
             const file = Buffer.from('test artifact 1');
