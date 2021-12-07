@@ -3,6 +3,7 @@
 ---
 ecosystem:
   store: ECOSYSTEM_STORE
+
 queue:
   redisConnection:
     host: REDIS_HOST
@@ -12,3 +13,14 @@ queue:
       tls: REDIS_TLS_ENABLED
     database: REDIS_DB_NUMBER
   prefix: REDIS_QUEUE_PREFIX
+
+worker:
+  # https://github.com/taskrabbit/node-resque#multiworker-options
+  # minimum number of workers to spawn
+  minTaskProcessors: WORKER_MIN_TASK_PROCESSORS
+  # maximum number of workers to spawn
+  maxTaskProcessors: WORKER_MAX_TASK_PROCESSORS
+  # how often to check if the event loop is blocked (ms)
+  checkTimeout: WORKER_CHECK_TIMEOUT
+  # how long the event loop has to be delayed before considering it blocked (ms)
+  maxEventLoopDelay: WORKER_MAX_EVENT_LOOP_DELAY
