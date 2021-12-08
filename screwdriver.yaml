@@ -39,7 +39,6 @@ jobs:
       - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
       - wait-docker: DOCKER_TAG=`meta get docker_tag` ./ci/docker-wait.sh
       - deploy-k8s: K8S_TAG=`meta get docker_tag` ./ci/k8s-deploy.sh
-      - test: npm install && npm test
     environment:
       K8S_CONTAINER: screwdriver-artifacts-unzip-worker
       K8S_IMAGE: screwdrivercd/artifacts-unzip-worker
@@ -59,7 +58,6 @@ jobs:
       - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
       - wait-docker: DOCKER_TAG=`meta get docker_tag` ./ci/docker-wait.sh
       - deploy-k8s: K8S_TAG=`meta get docker_tag` ./ci/k8s-deploy.sh
-      - test: npm install && npm test
     environment:
       K8S_CONTAINER: screwdriver-artifacts-unzip-worker
       K8S_IMAGE: screwdrivercd/artifacts-unzip-worker

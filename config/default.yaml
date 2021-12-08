@@ -12,7 +12,7 @@ queue:
     database: 0
   prefix: ''
 
-worker:
+unzip-worker:
   # https://github.com/taskrabbit/node-resque#multiworker-options
   # minimum number of workers to spawn
   minTaskProcessors: 1

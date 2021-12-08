@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/screwdriver-cd/artifacts-unzip-worker.git"
   },
-  "author": "",
+  "author": "Teppei Minegishi <saka2tetsu@gmail.com>",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/screwdriver-cd/screwdriver/issues"
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "chai": "^4.3.4",
-    "eslint": "^8.3.0",
+    "eslint": "^7.32.0",
     "eslint-config-screwdriver": "^6.0.0",
     "mocha": "^9.1.3",
     "mocha-multi-reporters": "^1.5.1",
