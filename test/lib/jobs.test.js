@@ -79,7 +79,7 @@ describe('Jobs Unit Test', () => {
             }
         });
 
-        it('raises an error when it failed to get ZIP artifacts', async () => {
+        it('raises an error when it failed to put ZIP artifacts', async () => {
             const testZip = new AdmZip();
 
             testZip.addFile(fileName1, file1);
