@@ -27,7 +27,7 @@ multiWorker.on('end', workerId => {
     logger.info(`worker[${workerId}] ended`);
 });
 multiWorker.on('cleaning_worker', (workerId, worker) => {
-    logger.info(`cleaning old worker ${worker}`);
+    logger.info(`cleaning old worker[${workerId}] ${worker}`);
 });
 multiWorker.on('poll', (workerId, queue) => {
     logger.info(`worker[${workerId}] polling ${queue}`);
@@ -39,7 +39,7 @@ multiWorker.on('job', (workerId, queue, job) => {
     logger.info(`worker[${workerId}] working job ${queue} ${JSON.stringify(job)}`);
 });
 multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => {
-    logger.info(`worker[${workerId}] reEnqueue job (${plugin}) ${queue} ${JSON.stringify(job)}`);
+    logger.info(`worker[${workerId}] reEnqueue job (${JSON.stringify(plugin)}) ${queue} ${JSON.stringify(job)}`);
 });
 multiWorker.on('success', (workerId, queue, job, result) => {
     logger.info(`worker[${workerId}] job success ${queue} ${JSON.stringify(job)} >> ${result}`);
