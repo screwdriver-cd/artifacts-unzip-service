@@ -63,7 +63,7 @@ describe('Jobs Unit Test', () => {
                 .withArgs(unzipConfig.buildId, unzipConfig.token, fileName2, file2)
                 .resolves({ statusCode: 202 });
 
-            assert.equal(await jobs.unzip.perform(unzipConfig), null);
+            assert.equal(await jobs.start.perform(unzipConfig), null);
         });
 
         it('raises an error when it failed to get ZIP artifacts', async () => {
@@ -72,7 +72,7 @@ describe('Jobs Unit Test', () => {
                 .throws(new Error('failed to get ZIP artifacts from Store'));
 
             try {
-                await jobs.unzip.perform(unzipConfig);
+                await jobs.start.perform(unzipConfig);
                 assert.fail('Never reaches here');
             } catch (err) {
                 assert.equal(err.message, 'failed to get ZIP artifacts from Store');
@@ -93,7 +93,7 @@ describe('Jobs Unit Test', () => {
                 .throws(new Error('failed to put an artifact to Store'));
 
             try {
-                await jobs.unzip.perform(unzipConfig);
+                await jobs.start.perform(unzipConfig);
                 assert.fail('Never reaches here');
             } catch (err) {
                 assert.equal(err.message, 'failed to put an artifact to Store');
