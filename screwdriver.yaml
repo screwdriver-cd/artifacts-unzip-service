@@ -9,10 +9,12 @@ jobs:
       SD_SONAR_OPTS: "-Dsonar.sources=lib,plugins,helpers -Dsonar.tests=test -Dsonar.javascript.lcov.reportPaths=artifacts/coverage/lcov.info -Dsonar.testExecutionReportPaths=artifacts/report/test.xml"
     requires: [~pr, ~commit]
     steps:
+      - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
       - install: npm install
+      - duplicate: NPM_FILTER=screwdriver- ./ci/npm-dups.sh
       - test: npm test
-      - coverage: ./ci/coverage.sh
-      - cp-coverage-to-artifacts: cp -r artifacts/coverage $SD_ARTIFACTS_DIR
+      - teardown-coverage: ./ci/coverage.sh
+      - teardown-cp-coverage-to-artifacts: cp -rf artifacts/coverage $SD_ARTIFACTS_DIR
 
   # Publish the package to GitHub and build Docker image
   publish:
