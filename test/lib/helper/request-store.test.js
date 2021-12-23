@@ -158,4 +158,52 @@ describe('Request to Store Unit Test', () => {
             }
         });
     });
+
+    describe('deleteZip function', () => {
+        it('can delete zip file to Store', async () => {
+            mockRequest
+                .withArgs({
+                    url: 'https://test-store.screwdriver.cd/v1/builds/1234/ARTIFACTS/SD_ARTIFACT.zip',
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: 'dummytoken'
+                    },
+                    retry: {
+                        limit: 5
+                    }
+                })
+                .resolves({ statusCode: 204 });
+
+            try {
+                const result = await store.deleteZip(buildId, token);
+
+                assert.equal(result.statusCode, 204);
+            } catch (err) {
+                assert.fail('Never reaches here');
+            }
+        });
+
+        it('throws exception when some error occurs', async () => {
+            const errObj = { response: { body: Buffer.from('Some Error!') } };
+
+            mockRequest
+                .withArgs({
+                    url: 'https://test-store.screwdriver.cd/v1/builds/1234/ARTIFACTS/SD_ARTIFACT.zip',
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: 'dummytoken'
+                    },
+                    retry: {
+                        limit: 5
+                    }
+                })
+                .throws(errObj);
+
+            try {
+                await store.putArtifact(buildId, token);
+            } catch (err) {
+                assert.equal(err.message, 'Some Error!');
+            }
+        });
+    });
 });
