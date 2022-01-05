@@ -200,7 +200,7 @@ describe('Request to Store Unit Test', () => {
                 .throws(errObj);
 
             try {
-                await store.putArtifact(buildId, token);
+                await store.deleteZip(buildId, token);
             } catch (err) {
                 assert.equal(err.message, 'Some Error!');
             }
