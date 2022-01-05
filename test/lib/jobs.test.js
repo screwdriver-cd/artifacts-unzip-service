@@ -102,7 +102,9 @@ describe('Jobs Unit Test', () => {
             }
         });
 
-        it('raises an error when it failed to delete ZIP artifacts', async () => {
+        // If the deletion of the zip fails, the job itself will not fail.
+        // The message of the zip deletion failure will be written in the log.
+        it('not raises an error when it failed to delete ZIP artifacts', async () => {
             const testZip = new AdmZip();
 
             testZip.addFile(fileName1, file1);
@@ -120,9 +122,8 @@ describe('Jobs Unit Test', () => {
 
             try {
                 await jobs.start.perform(unzipConfig);
-                assert.fail('Never reaches here');
             } catch (err) {
-                assert.equal(err.message, 'failed to delete an artifact to Store');
+                assert.fail(err.message, 'Never reaches here');
             }
         });
     });
