@@ -30,7 +30,7 @@ describe('Jobs Unit Test', () => {
         mockStore = {
             getZipArtifact: sinon.stub(),
             putArtifact: sinon.stub(),
-            deleteZip: sinon.stub()
+            deleteZipArtifact: sinon.stub()
         };
         mockery.registerMock('./helper/request-store', mockStore);
 
@@ -63,7 +63,7 @@ describe('Jobs Unit Test', () => {
             mockStore.putArtifact
                 .withArgs(unzipConfig.buildId, unzipConfig.token, fileName2, file2)
                 .resolves({ statusCode: 202 });
-            mockStore.deleteZip.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
+            mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
 
             assert.equal(await jobs.start.perform(unzipConfig), null);
         });
@@ -116,7 +116,7 @@ describe('Jobs Unit Test', () => {
             mockStore.putArtifact
                 .withArgs(unzipConfig.buildId, unzipConfig.token, fileName2, file2)
                 .resolves({ statusCode: 202 });
-            mockStore.deleteZip
+            mockStore.deleteZipArtifact
                 .withArgs(unzipConfig.buildId, unzipConfig.token)
                 .throws(new Error('failed to delete an artifact to Store'));
 

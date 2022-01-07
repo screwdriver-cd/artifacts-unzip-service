@@ -159,7 +159,7 @@ describe('Request to Store Unit Test', () => {
         });
     });
 
-    describe('deleteZip function', () => {
+    describe('deleteZipArtifact function', () => {
         it('can delete zip file to Store', async () => {
             mockRequest
                 .withArgs({
@@ -175,7 +175,7 @@ describe('Request to Store Unit Test', () => {
                 .resolves({ statusCode: 204 });
 
             try {
-                const result = await store.deleteZip(buildId, token);
+                const result = await store.deleteZipArtifact(buildId, token);
 
                 assert.equal(result.statusCode, 204);
             } catch (err) {
@@ -200,7 +200,7 @@ describe('Request to Store Unit Test', () => {
                 .throws(errObj);
 
             try {
-                await store.deleteZip(buildId, token);
+                await store.deleteZipArtifact(buildId, token);
             } catch (err) {
                 assert.equal(err.message, 'Some Error!');
             }
