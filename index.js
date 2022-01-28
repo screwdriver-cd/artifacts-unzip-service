@@ -71,7 +71,7 @@ const boot = async () => {
     });
 
     multiWorker.start();
-}
+};
 
 boot();
 
