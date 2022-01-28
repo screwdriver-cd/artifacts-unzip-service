@@ -21,6 +21,7 @@
   "homepage": "https://github.com/screwdriver-cd/artifacts-unzip-service#readme",
   "contributors": [],
   "dependencies": {
+    "@hapi/hapi": "^20.2.1",
     "adm-zip": "^0.5.9",
     "config": "^3.3.6",
     "got": "^11.8.3",
