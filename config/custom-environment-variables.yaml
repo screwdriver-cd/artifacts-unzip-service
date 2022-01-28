@@ -14,7 +14,7 @@ queue:
     database: REDIS_DB_NUMBER
   prefix: REDIS_QUEUE_PREFIX
 
-unzip-worker:
+unzip-service:
   # https://github.com/taskrabbit/node-resque#multiworker-options
   # minimum number of workers to spawn
   minTaskProcessors: WORKER_MIN_TASK_PROCESSORS

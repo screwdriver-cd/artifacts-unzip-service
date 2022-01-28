@@ -5,7 +5,7 @@ const config = require('config');
 const logger = require('screwdriver-logger');
 const jobs = require('./lib/jobs');
 const { connectionDetails, queuePrefix } = require('./config/redis');
-const workerConfig = config.get('unzip-worker');
+const workerConfig = config.get('unzip-service');
 
 const multiWorker = new NodeResque.MultiWorker(
     {

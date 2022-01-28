@@ -1,4 +1,4 @@
-# Screwdriver Artifacts Unzip Worker
+# Screwdriver Artifacts Unzip Service
 [![Version][npm-image]][npm-url] ![Downloads][downloads-image] [![Build Status][status-image]][status-url] [![Open Issues][issues-image]][issues-url] [![Dependency Status][daviddm-image]][daviddm-url] ![License][license-image]
 
 > A worker implementation that consumes jobs from Resque.
@@ -6,7 +6,7 @@
 ## Usage
 
 ```bash
-npm install screwdriver-artifacts-unzip-worker
+npm install screwdriver-artifacts-unzip-service
 ```
 
 ## Testing

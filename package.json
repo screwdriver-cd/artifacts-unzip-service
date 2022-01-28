@@ -1,5 +1,5 @@
 {
-  "name": "screwdriver-artifacts-unzip-worker",
+  "name": "screwdriver-artifacts-unzip-service",
   "version": "1.0.0",
   "description": "A resque worker implementation that unzips the ZIP artifacts.",
   "main": "index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/screwdriver-cd/artifacts-unzip-worker.git"
+    "url": "git+https://github.com/screwdriver-cd/artifacts-unzip-service.git"
   },
   "author": "Teppei Minegishi <saka2tetsu@gmail.com>",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/screwdriver-cd/screwdriver/issues"
   },
-  "homepage": "https://github.com/screwdriver-cd/artifacts-unzip-worker#readme",
+  "homepage": "https://github.com/screwdriver-cd/artifacts-unzip-service#readme",
   "contributors": [],
   "dependencies": {
     "adm-zip": "^0.5.9",
