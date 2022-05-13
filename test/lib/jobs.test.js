@@ -18,12 +18,15 @@ const file2 = Buffer.from('test artifact 2');
 describe('Jobs Unit Test', () => {
     let jobs;
     let mockStore;
+    let configMock;
+    let sinonSandbox;
 
     before(() => {
         mockery.enable({
             useCleanCache: true,
             warnOnUnregistered: false
         });
+        sinonSandbox = sinon.createSandbox();
     });
 
     beforeEach(() => {
@@ -33,9 +36,15 @@ describe('Jobs Unit Test', () => {
             deleteZipArtifact: sinon.stub()
         };
         mockery.registerMock('./helper/request-store', mockStore);
+        configMock = {
+            get: sinon.stub().returns({ parallelUploadLimit: 100 })
+        };
+        mockery.registerMock('config', configMock);
 
         // eslint-disable-next-line global-require
         jobs = require('../../lib/jobs');
+
+        sinonSandbox.restore();
     });
 
     afterEach(() => {
@@ -66,6 +75,77 @@ describe('Jobs Unit Test', () => {
             mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
 
             assert.equal(await jobs.start.perform(unzipConfig), null);
+        });
+
+        it('Upload 200 files, limiting the number of parallel uploads to 100', async () => {
+            const FILE_NUM = 200;
+            const testZip = new AdmZip();
+            const filesName = Array(FILE_NUM)
+                .fill()
+                .map((_, index) => `test-artifact${index}.txt`);
+            const filesContent = Array(FILE_NUM)
+                .fill()
+                .map((_, index) => Buffer.from(`test artifact ${index}`));
+            const spyPromiseAll = sinonSandbox.spy(Promise, 'all');
+
+            Array(FILE_NUM)
+                .fill()
+                .forEach((_, index) => {
+                    testZip.addFile(filesName[index], filesContent[index]);
+                    mockStore.putArtifact
+                        .withArgs(unzipConfig.buildId, unzipConfig.token, filesName[index], filesContent[index])
+                        .resolves({ statusCode: 202 });
+                });
+            mockStore.getZipArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token)
+                .resolves({ body: testZip.toBuffer() });
+            mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
+
+            await jobs.start.perform(unzipConfig);
+            assert.equal(2, spyPromiseAll.callCount);
+        });
+
+        it('Upload 200 files, limiting the number of parallel uploads to 0', async () => {
+            mockery.deregisterAll();
+            mockery.resetCache();
+            mockStore = {
+                getZipArtifact: sinon.stub(),
+                putArtifact: sinon.stub(),
+                deleteZipArtifact: sinon.stub()
+            };
+            mockery.registerMock('./helper/request-store', mockStore);
+            configMock = {
+                get: sinon.stub().returns({ parallelUploadLimit: 0 })
+            };
+            mockery.registerMock('config', configMock);
+
+            // eslint-disable-next-line global-require
+            jobs = require('../../lib/jobs');
+            const FILE_NUM = 200;
+            const testZip = new AdmZip();
+            const filesName = Array(FILE_NUM)
+                .fill()
+                .map((_, index) => `test-artifact${index}.txt`);
+            const filesContent = Array(FILE_NUM)
+                .fill()
+                .map((_, index) => Buffer.from(`test artifact ${index}`));
+            const spyPromiseAll = sinonSandbox.spy(Promise, 'all');
+
+            Array(FILE_NUM)
+                .fill()
+                .forEach((_, index) => {
+                    testZip.addFile(filesName[index], filesContent[index]);
+                    mockStore.putArtifact
+                        .withArgs(unzipConfig.buildId, unzipConfig.token, filesName[index], filesContent[index])
+                        .resolves({ statusCode: 202 });
+                });
+            mockStore.getZipArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token)
+                .resolves({ body: testZip.toBuffer() });
+            mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
+
+            await jobs.start.perform(unzipConfig);
+            assert.equal(1, spyPromiseAll.callCount);
         });
 
         it('raises an error when it failed to get ZIP artifacts', async () => {
