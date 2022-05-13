@@ -22,6 +22,9 @@ unzip-service:
   checkTimeout: 1000
   # how long the event loop has to be delayed before considering it blocked (ms)
   maxEventLoopDelay: 10
+  # number of parallel executions for asynchronous upload of unzipped files to store
+  # if set to 0, unlimited.
+  parallelUploadLimit: 0
 
 httpd:
   # Port to listen on

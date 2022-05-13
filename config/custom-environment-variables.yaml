@@ -24,6 +24,8 @@ unzip-service:
   checkTimeout: WORKER_CHECK_TIMEOUT
   # how long the event loop has to be delayed before considering it blocked (ms)
   maxEventLoopDelay: WORKER_MAX_EVENT_LOOP_DELAY
+  # number of parallel executions for asynchronous upload of unzipped files to store
+  parallelUploadLimit: WORKER_PARALLEL_UPLOAD_LIMIT
 
 httpd:
   # Port to listen on
