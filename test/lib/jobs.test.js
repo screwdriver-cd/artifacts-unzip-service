@@ -77,7 +77,7 @@ describe('Jobs Unit Test', () => {
             assert.equal(await jobs.start.perform(unzipConfig), null);
         });
 
-        it('Upload 200 files, limiting the number of parallel uploads to 100', async () => {
+        it('upload 200 files, limiting the number of parallel uploads to 100', async () => {
             const FILE_NUM = 200;
             const testZip = new AdmZip();
             const filesName = Array(FILE_NUM)
@@ -105,7 +105,7 @@ describe('Jobs Unit Test', () => {
             assert.equal(2, spyPromiseAll.callCount);
         });
 
-        it('Upload 200 files, limiting the number of parallel uploads to 0', async () => {
+        it('upload 200 files, limiting the number of parallel uploads to 0', async () => {
             mockery.deregisterAll();
             mockery.resetCache();
             mockStore = {
@@ -146,6 +146,84 @@ describe('Jobs Unit Test', () => {
 
             await jobs.start.perform(unzipConfig);
             assert.equal(1, spyPromiseAll.callCount);
+        });
+
+        it('can set the WORKER_PARALLEL_UPLOAD_LIMIT to an integer of character type', async () => {
+            mockery.deregisterAll();
+            mockery.resetCache();
+            mockStore = {
+                getZipArtifact: sinon.stub(),
+                putArtifact: sinon.stub(),
+                deleteZipArtifact: sinon.stub()
+            };
+            mockery.registerMock('./helper/request-store', mockStore);
+            configMock = {
+                get: sinon.stub().returns({ parallelUploadLimit: '1' })
+            };
+            mockery.registerMock('config', configMock);
+
+            // eslint-disable-next-line global-require
+            jobs = require('../../lib/jobs');
+            const testZip = new AdmZip();
+            const spyPromiseAll = sinonSandbox.spy(Promise, 'all');
+
+            testZip.addFile(fileName1, file1);
+            testZip.addFile(fileName2, file2);
+
+            mockStore.getZipArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token)
+                .resolves({ body: testZip.toBuffer() });
+            mockStore.putArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token, fileName1, file1)
+                .resolves({ statusCode: 202 });
+            mockStore.putArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token, fileName2, file2)
+                .resolves({ statusCode: 202 });
+            mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
+
+            await jobs.start.perform(unzipConfig);
+            assert.equal(2, spyPromiseAll.callCount);
+        });
+
+        it('raises an error when set not integer to WORKER_PARALLEL_UPLOAD_LIMIT', async () => {
+            mockery.deregisterAll();
+            mockery.resetCache();
+            mockStore = {
+                getZipArtifact: sinon.stub(),
+                putArtifact: sinon.stub(),
+                deleteZipArtifact: sinon.stub()
+            };
+            mockery.registerMock('./helper/request-store', mockStore);
+            configMock = {
+                get: sinon.stub().returns({ parallelUploadLimit: 'Not integer value' })
+            };
+            mockery.registerMock('config', configMock);
+
+            // eslint-disable-next-line global-require
+            jobs = require('../../lib/jobs');
+
+            const testZip = new AdmZip();
+
+            testZip.addFile(fileName1, file1);
+            testZip.addFile(fileName2, file2);
+
+            mockStore.getZipArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token)
+                .resolves({ body: testZip.toBuffer() });
+            mockStore.putArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token, fileName1, file1)
+                .resolves({ statusCode: 202 });
+            mockStore.putArtifact
+                .withArgs(unzipConfig.buildId, unzipConfig.token, fileName2, file2)
+                .resolves({ statusCode: 202 });
+            mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
+
+            try {
+                assert.equal(await jobs.start.perform(unzipConfig), null);
+                assert.fail('Never reaches here');
+            } catch (err) {
+                assert.equal(err.message, 'A value other than an integer is set for WORKER_PARALLEL_UPLOAD_LIMIT.');
+            }
         });
 
         it('raises an error when it failed to get ZIP artifacts', async () => {
