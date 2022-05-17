@@ -199,26 +199,9 @@ describe('Jobs Unit Test', () => {
             };
             mockery.registerMock('config', configMock);
 
-            // eslint-disable-next-line global-require
-            jobs = require('../../lib/jobs');
-
-            const testZip = new AdmZip();
-
-            testZip.addFile(fileName1, file1);
-            testZip.addFile(fileName2, file2);
-
-            mockStore.getZipArtifact
-                .withArgs(unzipConfig.buildId, unzipConfig.token)
-                .resolves({ body: testZip.toBuffer() });
-            mockStore.putArtifact
-                .withArgs(unzipConfig.buildId, unzipConfig.token, fileName1, file1)
-                .resolves({ statusCode: 202 });
-            mockStore.putArtifact
-                .withArgs(unzipConfig.buildId, unzipConfig.token, fileName2, file2)
-                .resolves({ statusCode: 202 });
-            mockStore.deleteZipArtifact.withArgs(unzipConfig.buildId, unzipConfig.token).resolves({ statusCode: 202 });
-
             try {
+                // eslint-disable-next-line global-require
+                jobs = require('../../lib/jobs');
                 assert.equal(await jobs.start.perform(unzipConfig), null);
                 assert.fail('Never reaches here');
             } catch (err) {
