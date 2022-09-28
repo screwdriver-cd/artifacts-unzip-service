@@ -5,6 +5,8 @@ ecosystem:
   store: ECOSYSTEM_STORE
 
 queue:
+  # redis or redisCluster(beta)
+  connectionType: REDIS_TYPE
   redisConnection:
     host: REDIS_HOST
     port: REDIS_PORT
@@ -12,6 +14,14 @@ queue:
       password: REDIS_PASSWORD
       tls: REDIS_TLS_ENABLED
     database: REDIS_DB_NUMBER
+  redisClusterConnection:
+    hosts:
+      __name: REDIS_CLUSTER_HOSTS
+      __format: json
+    options:
+      password: REDIS_PASSWORD
+      tls: REDIS_TLS_ENABLED
+    slotsRefreshTimeout: REDIS_CLUSTER_SLOTS_REFRESH_TIMEOUT
   prefix: REDIS_QUEUE_PREFIX
 
 unzip-service:

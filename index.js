@@ -1,17 +1,32 @@
 'use strict';
 
+const Redis = require('ioredis');
 const NodeResque = require('node-resque');
 const config = require('config');
 const logger = require('screwdriver-logger');
 const jobs = require('./lib/jobs');
 const server = require('./lib/server');
-const { connectionDetails, queuePrefix } = require('./config/redis');
+const { connectionDetails, queueNamespace, queuePrefix } = require('./config/redis');
 const workerConfig = config.get('unzip-service');
 const httpdConfig = config.get('httpd');
 
+let redis;
+
+if (connectionDetails.redisClusterHosts) {
+    redis = new Redis.Cluster(connectionDetails.redisClusterHosts, {
+        redisOptions: connectionDetails.redisOptions,
+        slotsRefreshTimeout: parseInt(connectionDetails.slotsRefreshTimeout, 10),
+        clusterRetryStrategy: () => 100
+    });
+    logger.info('Connecting to Redis Cluster');
+} else {
+    redis = new Redis(connectionDetails.redisOptions);
+    logger.info('Connecting to Redis');
+}
+
 const multiWorker = new NodeResque.MultiWorker(
     {
-        connection: connectionDetails,
+        connection: { redis, namespace: queueNamespace },
         queues: [`${queuePrefix}unzip`],
         minTaskProcessors: workerConfig.minTaskProcessors,
         maxTaskProcessors: workerConfig.maxTaskProcessors,

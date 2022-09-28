@@ -3,6 +3,8 @@ ecosystem:
   store: http://IP_ADDRESS:PORT
 
 queue:
+  # redis or redisCluster(beta)
+  connectionType: redis
   redisConnection:
     host: REDIS_HOST
     port: REDIS_PORT
@@ -10,7 +12,13 @@ queue:
       password: a-secure-password
       tls: false
     database: 0
-  prefix: ''
+  redisClusterConnection:
+    hosts: []
+    options:
+      password: a-secure-password
+      tls: false
+    slotsRefreshTimeout: 1000
+  prefix: ""
 
 unzip-service:
   # https://github.com/taskrabbit/node-resque#multiworker-options
