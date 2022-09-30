@@ -62,11 +62,11 @@ const boot = async () => {
     multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => {
         logger.info(`worker[${workerId}] reEnqueue job (${JSON.stringify(plugin)}) ${queue} ${JSON.stringify(job)}`);
     });
-    multiWorker.on('success', (workerId, queue, job, result) => {
-        logger.info(`worker[${workerId}] job success ${queue} ${JSON.stringify(job)} >> ${result}`);
+    multiWorker.on('success', (workerId, queue, job, result, duration) => {
+        logger.info(`worker[${workerId}] job success ${queue} ${JSON.stringify(job)} >> ${result} (${duration}ms)`);
     });
-    multiWorker.on('failure', (workerId, queue, job, failure) => {
-        logger.info(`worker[${workerId}] job failure ${queue} ${JSON.stringify(job)} >> ${failure}`);
+    multiWorker.on('failure', (workerId, queue, job, failure, duration) => {
+        logger.info(`worker[${workerId}] job failure ${queue} ${JSON.stringify(job)} >> ${failure} (${duration}ms)`);
     });
     multiWorker.on('error', (workerId, queue, job, error) => {
         logger.info(`worker[${workerId}] error ${queue} ${JSON.stringify(job)} >> ${error}`);
@@ -76,9 +76,6 @@ const boot = async () => {
     });
 
     // multiWorker emitters
-    multiWorker.on('internalError', error => {
-        logger.error(error);
-    });
     multiWorker.on('multiWorkerAction', (verb, delay) => {
         // Save the last emitted time of this event for health check.
         server.saveLastEmittedTime();
