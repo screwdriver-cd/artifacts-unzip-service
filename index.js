@@ -1,17 +1,32 @@
 'use strict';
 
+const Redis = require('ioredis');
 const NodeResque = require('node-resque');
 const config = require('config');
 const logger = require('screwdriver-logger');
 const jobs = require('./lib/jobs');
 const server = require('./lib/server');
-const { connectionDetails, queuePrefix } = require('./config/redis');
+const { connectionDetails, queueNamespace, queuePrefix } = require('./config/redis');
 const workerConfig = config.get('unzip-service');
 const httpdConfig = config.get('httpd');
 
+let redis;
+
+if (connectionDetails.redisClusterHosts) {
+    redis = new Redis.Cluster(connectionDetails.redisClusterHosts, {
+        redisOptions: connectionDetails.redisOptions,
+        slotsRefreshTimeout: parseInt(connectionDetails.slotsRefreshTimeout, 10),
+        clusterRetryStrategy: () => 100
+    });
+    logger.info('Connecting to Redis Cluster');
+} else {
+    redis = new Redis(connectionDetails.redisOptions);
+    logger.info('Connecting to Redis');
+}
+
 const multiWorker = new NodeResque.MultiWorker(
     {
-        connection: connectionDetails,
+        connection: { redis, namespace: queueNamespace },
         queues: [`${queuePrefix}unzip`],
         minTaskProcessors: workerConfig.minTaskProcessors,
         maxTaskProcessors: workerConfig.maxTaskProcessors,
@@ -47,11 +62,11 @@ const boot = async () => {
     multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => {
         logger.info(`worker[${workerId}] reEnqueue job (${JSON.stringify(plugin)}) ${queue} ${JSON.stringify(job)}`);
     });
-    multiWorker.on('success', (workerId, queue, job, result) => {
-        logger.info(`worker[${workerId}] job success ${queue} ${JSON.stringify(job)} >> ${result}`);
+    multiWorker.on('success', (workerId, queue, job, result, duration) => {
+        logger.info(`worker[${workerId}] job success ${queue} ${JSON.stringify(job)} >> ${result} (${duration}ms)`);
     });
-    multiWorker.on('failure', (workerId, queue, job, failure) => {
-        logger.info(`worker[${workerId}] job failure ${queue} ${JSON.stringify(job)} >> ${failure}`);
+    multiWorker.on('failure', (workerId, queue, job, failure, duration) => {
+        logger.info(`worker[${workerId}] job failure ${queue} ${JSON.stringify(job)} >> ${failure} (${duration}ms)`);
     });
     multiWorker.on('error', (workerId, queue, job, error) => {
         logger.info(`worker[${workerId}] error ${queue} ${JSON.stringify(job)} >> ${error}`);
@@ -61,9 +76,6 @@ const boot = async () => {
     });
 
     // multiWorker emitters
-    multiWorker.on('internalError', error => {
-        logger.error(error);
-    });
     multiWorker.on('multiWorkerAction', (verb, delay) => {
         // Save the last emitted time of this event for health check.
         server.saveLastEmittedTime();
