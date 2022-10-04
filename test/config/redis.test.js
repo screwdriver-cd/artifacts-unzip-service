@@ -104,4 +104,18 @@ describe('redis config', () => {
             assert.exists(err, "'redis' or 'redisCluster' can be set for queue.connectionType");
         }
     });
+
+    it('throws exception if connectionType is not specified', async () => {
+        const testQueueConfig = Object.assign({}, queueConfig);
+
+        testQueueConfig.connectionType = '';
+        configMock.get.returns(testQueueConfig);
+
+        try {
+            /* eslint-disable global-require */
+            require('../../config/redis');
+        } catch (err) {
+            assert.exists(err, "'redis' or 'redisCluster' can be set for queue.connectionType");
+        }
+    });
 });
