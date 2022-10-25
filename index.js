@@ -28,10 +28,10 @@ const multiWorker = new NodeResque.MultiWorker(
     {
         connection: { redis, namespace: queueNamespace },
         queues: [`${queuePrefix}unzip`],
-        minTaskProcessors: workerConfig.minTaskProcessors,
-        maxTaskProcessors: workerConfig.maxTaskProcessors,
-        checkTimeout: workerConfig.checkTimeout,
-        maxEventLoopDelay: workerConfig.maxEventLoopDelay
+        minTaskProcessors: parseInt(workerConfig.minTaskProcessors, 10),
+        maxTaskProcessors: parseInt(workerConfig.maxTaskProcessors, 10),
+        checkTimeout: parseInt(workerConfig.checkTimeout, 10),
+        maxEventLoopDelay: parseInt(workerConfig.maxEventLoopDelay, 10)
     },
     jobs
 );
