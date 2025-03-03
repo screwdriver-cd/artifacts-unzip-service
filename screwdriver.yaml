@@ -5,7 +5,7 @@ shared:
 
 jobs:
   main:
-    image: node:16
+    image: node:22
     environment:
       SD_SONAR_OPTS: "-Dsonar.sources=lib,plugins,helpers -Dsonar.tests=test -Dsonar.javascript.lcov.reportPaths=artifacts/coverage/lcov.info -Dsonar.testExecutionReportPaths=artifacts/report/test.xml"
     requires: [~pr, ~commit]
@@ -15,7 +15,7 @@ jobs:
 
   # Publish the package to GitHub and build Docker image
   publish:
-    image: node:16
+    image: node:22
     requires: [main]
     steps:
       - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
@@ -33,7 +33,7 @@ jobs:
 
   # Deploy to beta environment and run tests
   # beta:
-  #   image: node:16
+  #   image: node:22
   #   requires: [docker-publish]
   #   steps:
   #     - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
@@ -52,7 +52,7 @@ jobs:
 
   # Deploy to prod environment and run tests
   # prod:
-  #   image: node:16
+  #   image: node:22
   #   requires: [beta]
   #   steps:
   #     - setup-ci: git clone https://github.com/screwdriver-cd/toolbox.git ci
