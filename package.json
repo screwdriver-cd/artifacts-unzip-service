@@ -1,6 +1,6 @@
 {
   "name": "screwdriver-artifacts-unzip-service",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A resque worker implementation that unzips the ZIP artifacts.",
   "main": "index.js",
   "scripts": {
