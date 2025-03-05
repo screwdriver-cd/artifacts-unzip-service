@@ -25,7 +25,7 @@ jobs:
       # Publishing to NPM
       - NPM_TOKEN
       # Pushing tags to Git
-      - GIT_KEY
+      - GIT_KEY_BASE64
 
   docker-publish:
     requires: publish
