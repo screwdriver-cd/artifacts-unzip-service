@@ -22,7 +22,7 @@
   "contributors": [],
   "dependencies": {
     "@hapi/hapi": "^21.4.9",
-    "adm-zip": "^0.5.9",
+    "adm-zip": "^0.6.1",
     "config": "^3.3.6",
     "got": "^11.8.3",
     "ioredis": "^5.2.3",
